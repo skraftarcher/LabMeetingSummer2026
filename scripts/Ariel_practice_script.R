@@ -13,4 +13,4 @@ x3<-c(1,2,3,4,5)
 #data frame----
 x4<-data.frame(var1=seq(1,10,1),var2=("a"),var3=c(1.2,3.4))
 
-# practice script Ariel lab
+# practice script Ariel
