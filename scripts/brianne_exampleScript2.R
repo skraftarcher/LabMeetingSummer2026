@@ -43,7 +43,7 @@ b3 |>
   group_by(taxaID) |>
   summarise(taxaCount = sum(abundance)) |>
   print(n=100)
-# why is amp-iso-exp -495? -- addressed!
+# why is amp-iso-exp -495? -- addressed; see below (and above)!
 
 # How many of each taxa have been found at each site?
 table(b3$taxaID,b3$site)
@@ -77,5 +77,6 @@ b3 |>
 #### maybe take these out for now?
 
 # seems like biomass is the variable of choice for analyses over
-# abundance
+# abundance. Try to get at site biomass, unique number of taxaIDs
+# (diversity), and salinity?
 
