@@ -80,3 +80,50 @@ b3 |>
 # abundance. Try to get at site biomass, unique number of taxaIDs
 # (diversity), and salinity?
 
+# lab meeting 7/14----
+# how to get at taxa by site?
+# first idea:
+b4<-b2 |>
+  pivot_wider(names_from=site,values_from=mean.biomass2)
+# has rows for each unique combo of tray and date, not easy to read
+# second idea:
+b4<-b2 |>
+  pivot_wider(names_from=taxaID,values_from=mean.biomass2)
+# has rows...(try this later to confirm)
+# fill the NAs with 0s
+b4<-b2 |>
+  pivot_wider(names_from=taxaID, values_from=mean.biomass2, values_fill=0)
+
+# looking for outliers:
+# first ggplot
+ggplot(data = biod) + #creates a graph object
+  geom_boxplot(aes(y=abundance, fill=taxaID)) #plots abundance for each taxaID
+# try again
+ggplot(data = biod)+
+  geom_boxplot(aes(y=abundance))+
+  facet_wrap(~taxaID)
+# try again
+ggplot(data = biod)+
+  geom_boxplot(aes(y=abundance))+
+  facet_wrap(~taxaID,scales="free")
+# ggplot for specific taxa:
+ggplot(data = biod |>
+         filter(taxaID %in% c("amp-iso-uni", "shmp-1","poly1")))+
+  geom_boxplot(aes(y=abundance))+
+  facet_wrap(~taxaID,scales="free")
+
+# shrimp-1 abundance at LUMO3 over time
+# with theme to change base aesthetics
+theme_set(theme_bw()+theme(panel.grid=element.blank(),
+                           axis.text=element.text(size=18),
+                           axis.title=element.text(size=18)))
+
+ggplot(data=biod|>
+         filter(site=="LUMO3")|>
+         filter(taxaID=="shmp-1"))+
+  #geom_point(aes(x=date.retrieved, y=abundance)) add this to boxplot later
+  geom_boxplot(aes(x=date.retrieved,y=abundance,group=date.retrieved))+
+  geom_point(aes(x=date.retrieved, y=abundance)) # can change size and colors of points
+  #theme(panel.grid=element.blank(), this is addressed above w/theme_set
+        #panel.background=element.blank(),
+        #panel.border=element.rect(color="black"))
