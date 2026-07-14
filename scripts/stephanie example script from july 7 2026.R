@@ -7,6 +7,10 @@ library(tidyverse)
 #install.packages("readxl")
 library(readxl)
 
+theme_set(theme_bw()+theme(panel.grid = element_blank(),
+                           axis.text = element_text(size=14),
+                           axis.title = element_text(size=18)))
+
 #read in data
 biod<-read_xlsx(path="odata/labbiodiversity.xlsx",sheet=3)
 sal<-read.csv(file = "odata/salinity_data.csv")
@@ -37,8 +41,22 @@ b2<-biod%>%
   summarise(mean.biomass2=mean(biomass,na.rm=T))
   
 
+b3<-b2%>%
+  pivot_wider(names_from=site,values_from=mean.biomass2,values_fill = 0)
 
 
+# looking for outliers
+ggplot(data=biod%>%
+         filter(taxaID %in% c("shmp-1","poly-1","amp-iso-uni")))+#creates a graph object
+  geom_boxplot(aes(y=abundance))+
+  facet_wrap(~taxaID,scales="free")
 
-unique(b2$site.type)
-table(b2$site,b2$site.type)
+# shrimp-1 abundance at LUMO3 over time
+
+ggplot(data=biod%>%
+         filter(site=="LUMO3")%>%
+         filter(taxaID=="shmp-1"))+
+  geom_boxplot(aes(x=date.retrieved,y=abundance,group=date.retrieved))+
+  geom_point(aes(x=date.retrieved,y=abundance),color="red",size=6)+
+  geom_line(aes(x=date.retrieved,y=abundance,group=tray))
+
