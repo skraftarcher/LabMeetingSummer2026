@@ -7,9 +7,7 @@ library(tidyverse)
 #install.packages("readxl")
 library(readxl)
 
-theme_set(theme_bw()+theme(panel.grid = element_blank(),
-                           axis.text = element_text(size=14),
-                           axis.title = element_text(size=18)))
+source("scripts/ggplot_theme.R")
 
 #read in data
 biod<-read_xlsx(path="odata/labbiodiversity.xlsx",sheet=3)
@@ -38,7 +36,8 @@ b2<-biod%>%
          mean.biomass=mean(biomass,na.rm=T))%>%# we're going to create new variables 
   group_by(site,tray,date.retrieved,taxaID)%>%
   # mutate(mean.biomass2=mean(biomass,na.rm=T))
-  summarise(mean.biomass2=mean(biomass,na.rm=T))
+  summarise(mean.biomass2=mean(biomass,na.rm=T),
+            abundance=sum(abundance,na.rm=T))
   
 
 b3<-b2%>%
@@ -50,6 +49,7 @@ ggplot(data=biod%>%
          filter(taxaID %in% c("shmp-1","poly-1","amp-iso-uni")))+#creates a graph object
   geom_boxplot(aes(y=abundance))+
   facet_wrap(~taxaID,scales="free")
+
 
 # shrimp-1 abundance at LUMO3 over time
 
@@ -121,6 +121,8 @@ dep.sal<-left_join(deploys,sal3)%>%
 biod.withenv<-left_join(biod,dep.sal)
 
 # example ugly plot
-ggplot(data=biod%>%mutate(x2=row.names(.)))+
+ggplot(data=biod%>%mutate(x2=row.names(.))%>%filter(wet.weight>0))+
   geom_point(aes(x=x2,y=wet.weight,color=site,alpha=date.retrieved),size=4)+
-  scale_y_continuous(n.breaks=100)
+  scale_y_continuous(n.breaks=100)+
+  scale_color_viridis_d(option="B",begin=.2,end=.8)+
+  geom_text(aes(x=x2,y=wet.weight,label=x2))
